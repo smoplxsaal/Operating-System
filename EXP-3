@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+struct Process {
+    int id;
+    int at;
+    int bt;
+    int priority;
+    int ct;
+    int tat;
+    int wt;
+    bool isCompleted;
+};
+
+int main() {
+    int n;
+    printf("Enter number of processes: \n");
+    if (scanf("%d", &n) != 1) return 0;
+
+    struct Process p[n];
+    for (int i = 0; i < n; i++) {
+        p[i].id = i + 1;
+        printf("Enter AT, BT and Priority for P%d: \n", p[i].id);
+        scanf("%d %d %d", &p[i].at, &p[i].bt, &p[i].priority);
+        p[i].isCompleted = false;
+    }
+
+    int completed = 0, currentTime = 0;
+    float totalTAT = 0, totalWT = 0;
+
+    while (completed != n) {
+        int idx = -1;
+        int highestPriority = 1e9;
+
+        for (int i = 0; i < n; i++) {
+            if (p[i].at <= currentTime && !p[i].isCompleted) {
+                if (p[i].priority < highestPriority) {
+                    highestPriority = p[i].priority;
+                    idx = i;
+                }
+                if (p[i].priority == highestPriority) {
+                    if (idx != -1 && p[i].at < p[idx].at) {
+                        idx = i;
+                    }
+                }
+            }
+        }
+        if (idx != -1) {
+            p[idx].ct = currentTime + p[idx].bt;
+            p[idx].tat = p[idx].ct - p[idx].at;
+            p[idx].wt = p[idx].tat - p[idx].bt;
+
+            totalTAT += p[idx].tat;
+            totalWT += p[idx].wt;
+            p[idx].isCompleted = true;
+            completed++;
+            currentTime = p[idx].ct;
+        } else {
+            currentTime++;
+        }
+    }
+
+    printf("\nAverage Turnaround Time = %.2f", totalTAT / n);
+    printf("\nAverage Waiting Time = %.2f\n", totalWT / n);
+
+    return 0;
+}
