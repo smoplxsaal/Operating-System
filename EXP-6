@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+int main() {
+    int n, capacity;
+    
+    printf("Enter number of pages in reference string: \n");
+    scanf("%d", &n);
+    
+    int pages[n];
+    printf("Enter the reference string: \n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &pages[i]);
+    }
+    
+    printf("Enter number of frames: \n");
+    scanf("%d", &capacity);
+
+    int frames[capacity];
+    for (int i = 0; i < capacity; i++) {
+        frames[i] = -1; // Initialize frames as empty
+    }
+
+    int pageFaults = 0;
+    int pageHits = 0;
+    int insertIndex = 0;
+
+    for (int i = 0; i < n; i++) {
+        bool isHit = false;
+
+        // Check if page is already in frames (Hit)
+        for (int j = 0; j < capacity; j++) {
+            if (frames[j] == pages[i]) {
+                isHit = true;
+                break;
+            }
+        }
+        if (isHit) {
+            pageHits++;
+        } else {
+            // Page Fault: Replace the oldest page
+            frames[insertIndex] = pages[i];
+            insertIndex = (insertIndex + 1) % capacity; // Circular increment
+            pageFaults++;
+        }
+    }
+
+    printf("\nTotal Page Faults: %d", pageFaults);
+    printf("\nTotal Page Hits: %d\n", pageHits);
+
+    return 0;
+}
